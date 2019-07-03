@@ -3,9 +3,12 @@ Script that will handle the War Field
 """
 
 import logging
+from .map import Map
+from ..gamehandler.initializations import initializebotpositions
 from .gameconstants import (
-	FIELD_WIDTH,
-	FIELD_HEIGHT
+	MAP_WIDTH,
+	MAP_HEIGHT,
+	MAP_COIN_CELL
 )
 
 class Field:
@@ -13,12 +16,46 @@ class Field:
 	Object that will contain everything to describe a war field 
 	"""
 
-	def __init__(self):
+	def __init__(self, *args, **kwargs):
 		"""
-		Initialization of the class
+		Constructor
 		"""
-		self.height = FIELD_HEIGHT
-		self.width = FIELD_WIDTH
-		# Initialization of the field
-		self.field = [[0] * self.height for i in range(self.width)]
-		logging.info("Instantiating a new field %s x %s", str(self.width), str(self.height))
+		if len(kwargs) != 2:
+			self.map = Map(width=MAP_WIDTH, height=MAP_HEIGHT)
+		else:
+			self.map = Map(width=kwargs['width'], height=kwargs['height'])
+
+
+	def addbots(self, bots):
+		"""
+		Function that will handle the adding of bots on the field
+
+		Parameters
+		----------
+		bots
+			Bot list
+		"""
+		initializebotpositions(bots, self)
+
+	def getmap(self):
+		"""
+		map getter
+		"""
+		return self.map
+
+	def getitemdictionnary(self):
+		"""
+		Function that will return all items in a dictionnary
+		"""
+		dictionnary = {}
+		for x in range(self.map.getwidth()):
+			for y in range(self.map.getheight()):
+				if self.map.getmap()[x][y] == MAP_COIN_CELL:
+					dictionnary['coin' + str(x) + str(y)] = (x, y)
+
+		return dictionnary
+
+
+
+
+
